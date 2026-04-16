@@ -37,7 +37,7 @@ If any command fails, install the missing tool first.
 
 ```bash
 # Navigate to the project
-cd day12-agent-deployment
+cd day12_ha-tang-cloud_va_deployment
 
 # Check structure
 ls
@@ -47,7 +47,7 @@ ls
 ### Step 2: Run Basic Example (3 minutes)
 
 ```bash
-cd 01-localhost-vs-production/basic
+cd 01-localhost-vs-production/develop
 pip install -r requirements.txt
 python app.py
 ```
@@ -66,7 +66,7 @@ curl http://localhost:8000/ask -X POST \
 ### Step 3: Docker Basics (5 minutes)
 
 ```bash
-cd ../../02-docker/basic
+cd ../../02-docker/develop
 
 # Build image
 docker build -t my-agent .
@@ -121,7 +121,7 @@ curl https://your-agent.railway.app/ask -X POST \
 ### Step 5: Add Security (10 minutes)
 
 ```bash
-cd ../../04-api-gateway/basic
+cd ../../04-api-gateway/develop
 
 # Set API key
 export AGENT_API_KEY="my-secret-key"
@@ -185,7 +185,7 @@ cat README.md
 
 ### Option C: Explore Examples
 
-Browse through each section's `basic/` and `advanced/` folders.
+Browse through each section's `develop/` and `production/` folders.
 
 **Time:** 1 hour  
 **Outcome:** See different patterns and approaches

@@ -10,7 +10,7 @@
 ## Ví dụ Basic — Agent "Kiểu Localhost"
 
 ```
-basic/
+develop/
 ├── app.py          # ❌ Anti-patterns: hardcode secrets, no config, no health check
 ├── .env.example
 └── requirements.txt
@@ -36,7 +36,7 @@ python app.py
 ## Ví dụ Advanced — 12-Factor Compliant Agent
 
 ```
-advanced/
+production/
 ├── app.py          # ✅ Clean: config from env, health check, graceful shutdown
 ├── config.py       # ✅ Centralized config management
 ├── .env.example    # ✅ Template — không commit .env thật

@@ -11,7 +11,7 @@
 ## Ví dụ Basic — API Key Authentication
 
 ```
-basic/
+develop/
 ├── app.py              # Agent với API Key auth
 ├── test_auth.py        # Test script
 └── requirements.txt
@@ -39,7 +39,7 @@ curl http://localhost:8000/ask -X POST \
 ## Ví dụ Advanced — JWT + Rate Limiting + Cost Guard
 
 ```
-advanced/
+production/
 ├── app.py              # Full security stack
 ├── auth.py             # JWT token logic
 ├── rate_limiter.py     # In-memory rate limiter

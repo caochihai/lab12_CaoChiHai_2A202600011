@@ -9,27 +9,27 @@
 ## Cấu Trúc Project
 
 ```
-day12-agent-deployment/
+day12_ha-tang-cloud_va_deployment/
 ├── 01-localhost-vs-production/     # Section 1: Dev ≠ Production
-│   ├── basic/                      #   Agent "đúng kiểu localhost"
-│   └── advanced/                   #   12-Factor compliant agent
+│   ├── develop/                      #   Agent "đúng kiểu localhost"
+│   └── production/                   #   12-Factor compliant agent
 │
 ├── 02-docker/                      # Section 2: Containerization
-│   ├── basic/                      #   Dockerfile đơn giản
-│   └── advanced/                   #   Multi-stage + Docker Compose stack
+│   ├── develop/                      #   Dockerfile đơn giản
+│   └── production/                   #   Multi-stage + Docker Compose stack
 │
 ├── 03-cloud-deployment/            # Section 3: Cloud Options
 │   ├── railway/                    #   Deploy Railway (< 5 phút)
 │   ├── render/                     #   Deploy Render + render.yaml
-│   └── advanced-cloud-run/         #   GCP Cloud Run + CI/CD
+│   └── production-cloud-run/         #   GCP Cloud Run + CI/CD
 │
 ├── 04-api-gateway/                 # Section 4: Security
-│   ├── basic/                      #   API Key authentication
-│   └── advanced/                   #   JWT + Rate Limiting + Cost Guard
+│   ├── develop/                      #   API Key authentication
+│   └── production/                   #   JWT + Rate Limiting + Cost Guard
 │
 ├── 05-scaling-reliability/         # Section 5: Scale & Reliability
-│   ├── basic/                      #   Health check + graceful shutdown
-│   └── advanced/                   #   Stateless + Redis + Nginx LB
+│   ├── develop/                      #   Health check + graceful shutdown
+│   └── production/                   #   Stateless + Redis + Nginx LB
 │
 ├── 06-lab-complete/                # Lab 12: Production-ready agent
 │   └── (full project kết hợp tất cả)

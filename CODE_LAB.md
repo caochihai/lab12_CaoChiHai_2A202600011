@@ -61,7 +61,7 @@ Sau khi hoàn thành lab này, bạn sẽ:
 ### 📝 Exercise 1.1: Phát hiện anti-patterns
 
 ```bash
-cd 01-localhost-vs-production/basic
+cd 01-localhost-vs-production/develop
 ```
 
 **Nhiệm vụ:** Đọc `app.py` và tìm ít nhất 5 vấn đề.
@@ -97,7 +97,7 @@ curl http://localhost:8000/ask -X POST \
 ### 📝 Exercise 1.3: So sánh với advanced version
 
 ```bash
-cd ../advanced
+cd ../production
 cp .env.example .env
 pip install -r requirements.txt
 python app.py
@@ -138,7 +138,7 @@ python app.py
 ### 📝 Exercise 2.1: Dockerfile cơ bản
 
 ```bash
-cd ../../02-docker/basic
+cd ../../02-docker/develop
 ```
 
 **Nhiệm vụ:** Đọc `Dockerfile` và trả lời:
@@ -171,7 +171,7 @@ docker images my-agent:basic
 ### 📝 Exercise 2.3: Multi-stage build
 
 ```bash
-cd ../advanced
+cd ../production
 ```
 
 **Nhiệm vụ:** Đọc `Dockerfile` và tìm:
@@ -293,7 +293,7 @@ cd ../render
 ### 📝 Exercise 3.3: (Optional) GCP Cloud Run (15 phút)
 
 ```bash
-cd ../advanced-cloud-run
+cd ../production-cloud-run
 ```
 
 **Yêu cầu:** GCP account (có free tier).
@@ -323,7 +323,7 @@ cd ../advanced-cloud-run
 ### 📝 Exercise 4.1: API Key authentication
 
 ```bash
-cd ../../04-api-gateway/basic
+cd ../../04-api-gateway/develop
 ```
 
 **Nhiệm vụ:** Đọc `app.py` và tìm:
@@ -350,7 +350,7 @@ curl http://localhost:8000/ask -X POST \
 ### 📝 Exercise 4.2: JWT authentication (Advanced)
 
 ```bash
-cd ../advanced
+cd ../production
 ```
 
 **Nhiệm vụ:** 
@@ -460,7 +460,7 @@ def check_budget(user_id: str, estimated_cost: float) -> bool:
 ### 📝 Exercise 5.1: Health checks
 
 ```bash
-cd ../../05-scaling-reliability/basic
+cd ../../05-scaling-reliability/develop
 ```
 
 **Nhiệm vụ:** Implement 2 endpoints:
@@ -544,7 +544,7 @@ kill -TERM $PID
 ### 📝 Exercise 5.3: Stateless design
 
 ```bash
-cd ../advanced
+cd ../production
 ```
 
 **Nhiệm vụ:** Refactor code để stateless.

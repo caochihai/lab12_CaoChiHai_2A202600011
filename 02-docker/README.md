@@ -11,7 +11,7 @@
 ## Ví dụ Basic — Dockerfile Đơn Giản
 
 ```
-basic/
+develop/
 ├── app.py
 ├── Dockerfile          # Single-stage, dễ hiểu
 ├── .dockerignore
@@ -40,7 +40,7 @@ curl http://localhost:8000/health
 ## Ví dụ Advanced — Multi-Stage + Docker Compose
 
 ```
-advanced/
+production/
 ├── app.py
 ├── Dockerfile              # Multi-stage build → image nhỏ hơn nhiều
 ├── docker-compose.yml      # Full stack: agent + vector store + redis

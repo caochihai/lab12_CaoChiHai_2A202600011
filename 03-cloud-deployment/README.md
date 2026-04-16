@@ -42,12 +42,12 @@ render/
 
 ---
 
-## advanced-cloud-run/ — GCP Cloud Run + CI/CD
+## production-cloud-run/ — GCP Cloud Run + CI/CD
 
 Production-grade. Tự động build và deploy khi push code.
 
 ```
-advanced-cloud-run/
+production-cloud-run/
 ├── cloudbuild.yaml     # CI/CD pipeline
 ├── service.yaml        # Cloud Run service definition
 └── README.md           # Hướng dẫn chi tiết
