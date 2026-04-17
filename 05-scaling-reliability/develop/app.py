@@ -21,12 +21,14 @@ Simulate shutdown:
 import os
 import time
 import signal
+import sys
 import logging
 from datetime import datetime, timezone
 from contextlib import asynccontextmanager
 
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 import uvicorn
 from utils.mock_llm import ask
 
@@ -35,6 +37,7 @@ logger = logging.getLogger(__name__)
 
 START_TIME = time.time()
 _is_ready = False
+_is_shutting_down = False
 _in_flight_requests = 0  # đếm số request đang xử lý
 
 
@@ -73,6 +76,11 @@ app = FastAPI(title="Agent — Health Check Demo", lifespan=lifespan)
 async def track_requests(request, call_next):
     """Theo dõi số request đang xử lý."""
     global _in_flight_requests
+    if _is_shutting_down and request.url.path not in ("/health", "/ready"):
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Server is shutting down. Try again later."},
+        )
     _in_flight_requests += 1
     try:
         response = await call_next(request)
@@ -157,7 +165,7 @@ def ready():
     - Đang shutdown
     - Database/dependencies chưa connect
     """
-    if not _is_ready:
+    if not _is_ready or _is_shutting_down:
         raise HTTPException(
             status_code=503,
             detail="Agent not ready. Check back in a few seconds.",
@@ -177,10 +185,31 @@ def handle_sigterm(signum, frame):
     SIGTERM là signal platform gửi khi muốn dừng container.
     Khác với SIGKILL (không thể catch được).
 
-    uvicorn bắt SIGTERM tự động và gọi lifespan shutdown.
-    Hàm này để log thêm thông tin.
+    1) Stop accepting new requests
+    2) Finish in-flight requests
+    3) Close external connections
+    4) Exit process
     """
-    logger.info(f"Received signal {signum} — uvicorn will handle graceful shutdown")
+    global _is_ready, _is_shutting_down
+
+    if _is_shutting_down:
+        return
+
+    logger.info(f"Received signal {signum}. Starting graceful shutdown...")
+    _is_shutting_down = True
+    _is_ready = False
+
+    timeout = 30
+    start = time.time()
+    while _in_flight_requests > 0 and (time.time() - start) < timeout:
+        logger.info(f"Waiting for {_in_flight_requests} in-flight requests...")
+        time.sleep(1)
+
+    logger.info("Closing external connections/resources...")
+    # Close DB/Redis clients here if you have them.
+
+    logger.info("Graceful shutdown complete. Exiting process.")
+    sys.exit(0)
 
 
 signal.signal(signal.SIGTERM, handle_sigterm)
