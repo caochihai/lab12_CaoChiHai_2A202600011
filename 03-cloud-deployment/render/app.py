@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     logger.info("Agent shutdown")
 
 
-app = FastAPI(title="Agent (Docker Advanced)", version="2.0.0", lifespan=lifespan)
+app = FastAPI(title="AI Agent (Render)", version="2.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -56,7 +56,10 @@ def root():
 
 @app.post("/ask")
 async def ask_agent(request: Request):
-    body = await request.json()
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(400, "invalid JSON body")
     question = body.get("question", "")
     if not question:
         raise HTTPException(422, "question required")
