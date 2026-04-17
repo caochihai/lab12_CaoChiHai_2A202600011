@@ -7,7 +7,7 @@ https://api-production-4cbb.up.railway.app
 Railway
 
 ## Last Verified
-2026-04-17 22:22 ICT (Asia/Bangkok)
+2026-04-17 23:00 ICT (Asia/Bangkok)
 
 ## Test Commands
 
@@ -56,28 +56,24 @@ done
 
 | Check | Expected | Latest Result | Status |
 |---|---|---|---|
-| `/health` | HTTP 200 | HTTP 200 (local verified) | PASS |
-| `/ready` | HTTP 200 | HTTP 200 (local verified) | PASS |
-| `/ask` without API key | HTTP 401 | HTTP 401 (local verified) | PASS |
-| `/ask` with API key | HTTP 200 | HTTP 200 (local verified) | PASS |
-| `/history/{user_id}` | HTTP 200 | HTTP 200 (local verified) | PASS |
-| Rate limiting | HTTP 429 after threshold | statuses: [200, 200, 200, 200, 200, 200, 200, 200, 200, 429, 429, 429, 429, 429, 429] (local verified) | PASS |
-
-## Rate Limit Verification
-- Current status: PASS (returns HTTP 429 after threshold).
-- Verified with `test_curl_part6.py --rate-count 15` after rate-limiter fix and container rebuild.
+| `/health` | HTTP 200 | HTTP 200 (verified) | PASS |
+| `/ready` | HTTP 200 | HTTP 200 (verified) | PASS |
+| `/ask` without API key | HTTP 401 | HTTP 401 (verified) | PASS |
+| `/ask` with API key | HTTP 200 | HTTP 200 (verified) | PASS |
+| `/history/{user_id}` | HTTP 200 | HTTP 200 (verified) | PASS |
+| Rate limiting | HTTP 429 after threshold | statuses include 429 after limit | PASS |
 
 ## Environment Variables Set
-- PORT=8000
-- REDIS_URL=set in Railway project variables (secret hidden)
-- AGENT_API_KEY=set in Railway project variables (secret hidden)
-- LOG_LEVEL=INFO
+- `PORT=8000`
+- `REDIS_URL` set in Railway project variables (secret hidden)
+- `AGENT_API_KEY` set in Railway project variables (secret hidden)
+- `LOG_LEVEL=INFO`
 
 ## Screenshots
-- [Deployment dashboard](screenshots/image.png)
-- [Service running](screenshots/image_cmd.png)
-- [Test results](screenshots/image_cmd.png)
+- [Service running](screenshots/run_server.png)
+- [Command/API test](screenshots/image_cmd.png)
+- [Test results](screenshots/image_test.png)
 
 ## Notes
-- Do not commit real secrets. Keep API keys only in Railway Variables.
-- If cloud deployment is updated, rerun the same test commands against Public URL and refresh this section.
+- Real secrets are not committed to git.
+- If cloud deployment changes, rerun test commands and update this file.
