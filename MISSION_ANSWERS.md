@@ -5,105 +5,105 @@
 ### Exercise 1.1: Anti-patterns found
 
 1. Using `time.sleep()` inside async lifecycle  
-   â†’ Blocks the event loop, reducing concurrency and performance in production.
+   → Blocks the event loop, reducing concurrency and performance in production.
 
 2. Calling synchronous `ask()` function inside async endpoint  
-   â†’ Can block the server when handling multiple requests, should use async or run in thread pool.
+   → Can block the server when handling multiple requests, should use async or run in thread pool.
 
 3. Double JSON encoding in logging (`json.dumps` inside structured logging)  
-   â†’ Produces nested JSON logs, making them hard to parse in log aggregation systems.
+   → Produces nested JSON logs, making them hard to parse in log aggregation systems.
 
 4. Using global variable `is_ready` for readiness state  
-   â†’ Not thread-safe and may cause inconsistent state in multi-worker environments.
+   → Not thread-safe and may cause inconsistent state in multi-worker environments.
 
 5. No request validation using Pydantic  
-   â†’ Accepting raw JSON manually can lead to invalid input and lack of automatic validation/documentation.
+   → Accepting raw JSON manually can lead to invalid input and lack of automatic validation/documentation.
 
 6. Health check endpoint always returns "ok"  
-   â†’ Does not reflect real system state (e.g., model or database failure).
+   → Does not reflect real system state (e.g., model or database failure).
 
 7. Logging client IP address directly  
-   â†’ May expose sensitive user information (PII) and violate privacy best practices.
+   → May expose sensitive user information (PII) and violate privacy best practices.
 
 8. No timeout or retry mechanism when calling model (`ask`)  
-   â†’ Requests may hang indefinitely if the model is slow or unresponsive.
+   → Requests may hang indefinitely if the model is slow or unresponsive.
 
 9. CORS configuration allows all headers (`allow_headers=["*"]`)  
-   â†’ Can be overly permissive and introduce security risks.
+   → Can be overly permissive and introduce security risks.
 
 10. No rate limiting on `/ask` endpoint  
-    â†’ API is vulnerable to abuse or denial-of-service attacks.
+    → API is vulnerable to abuse or denial-of-service attacks.
 
-## Exercise 1.3: So sÃ¡nh vá»›i advanced version
+## Exercise 1.3: So sánh với advanced version
 
 ### Comparison between Basic vs Advanced app.py
 
-| Feature | Basic | Advanced | Táº¡i sao quan trá»ng? |
+| Feature | Basic | Advanced | Tại sao quan trọng? |
 |--------|------|----------|----------------------|
-| Config | Hardcode trong code | Environment variables (.env / settings) | TrÃ¡nh lá»™ secrets, dá»… deploy nhiá»u mÃ´i trÆ°á»ng (dev/staging/prod) |
-| Health check | KhÃ´ng cÃ³ | /health endpoint | GiÃºp há»‡ thá»‘ng monitoring biáº¿t service cÃ²n sá»‘ng hay khÃ´ng |
-| Logging | print() | Structured JSON logging | Dá»… parse log, há»— trá»£ monitoring tools (Datadog, Loki, ELK) |
-| Shutdown | Äá»™t ngá»™t (kill process) | Graceful shutdown (lifespan, SIGTERM) | TrÃ¡nh máº¥t request Ä‘ang xá»­ lÃ½, Ä‘áº£m báº£o dá»¯ liá»‡u khÃ´ng bá»‹ lá»—i |
-| Port binding | Hardcode (8000) | Config tá»« env (PORT) | TrÃ¡nh conflict port, phÃ¹ há»£p deploy cloud (Railway, Docker, K8s) |
-| Readiness check | KhÃ´ng cÃ³ | /ready endpoint | Load balancer chá»‰ route traffic khi service sáºµn sÃ ng |
+| Config | Hardcode trong code | Environment variables (.env / settings) | Tránh lộ secrets, dễ deploy nhiều môi trường (dev/staging/prod) |
+| Health check | Không có | /health endpoint | Giúp hệ thống monitoring biết service còn sống hay không |
+| Logging | print() | Structured JSON logging | Dễ parse log, hỗ trợ monitoring tools (Datadog, Loki, ELK) |
+| Shutdown | Đột ngột (kill process) | Graceful shutdown (lifespan, SIGTERM) | Tránh mất request đang xử lý, đảm bảo dữ liệu không bị lỗi |
+| Port binding | Hardcode (8000) | Config từ env (PORT) | Tránh conflict port, phù hợp deploy cloud (Railway, Docker, K8s) |
+| Readiness check | Không có | /ready endpoint | Load balancer chỉ route traffic khi service sẵn sàng |
 
 ---
 
 ## Checkpoint 1
 
-[x] Hiá»ƒu táº¡i sao hardcode secrets lÃ  nguy hiá»ƒm  
-[x] Biáº¿t cÃ¡ch dÃ¹ng environment variables  
-[x] Hiá»ƒu vai trÃ² cá»§a health check endpoint  
-[x] Biáº¿t graceful shutdown lÃ  gÃ¬  
+[x] Hiểu tại sao hardcode secrets là nguy hiểm  
+[x] Biết cách dùng environment variables  
+[x] Hiểu vai trò của health check endpoint  
+[x] Biết graceful shutdown là gì  
 
 ## Part 2: Docker
 
 ### Exercise 2.1: Dockerfile questions
 1. Base image: python:3.11 (develop) / python:3.11-slim (production)
 2. Working directory: /app
-3. Táº¡i sao COPY requirements.txt TRÆ¯á»šC rá»“i má»›i RUN pip install?
-   â†’ Docker cache layer: náº¿u code thay Ä‘á»•i nhÆ°ng requirements khÃ´ng Ä‘á»•i,
-     Docker dÃ¹ng láº¡i layer pip install â†’ build nhanh hÆ¡n nhiá»u
-4. CMD máº·c Ä‘á»‹nh: python app.py (develop) / uvicorn main:app --host 0.0.0.0 --port 8000 --workers 2 (production)
+3. Tại sao COPY requirements.txt TRƯỚC rồi mới RUN pip install?
+   → Docker cache layer: nếu code thay đổi nhưng requirements không đổi,
+     Docker dùng lại layer pip install → build nhanh hơn nhiều
+4. CMD mặc định: python app.py (develop) / uvicorn main:app --host 0.0.0.0 --port 8000 --workers 2 (production)
 
 ### Exercise 2.2: Multi-stage build
-- Stage 1 (builder): dÃ¹ng python:3.11-slim + gcc + libpq-dev Ä‘á»ƒ compile vÃ  install dependencies
-- Stage 2 (runtime): chá»‰ copy /root/.local (packages Ä‘Ã£ install) tá»« builder sang
-- Lá»£i Ã­ch: Final image khÃ´ng chá»©a pip, gcc, build tools â†’ nhá» hÆ¡n vÃ  an toÃ n hÆ¡n
-- Security: cháº¡y vá»›i non-root user (appuser) thay vÃ¬ root
+- Stage 1 (builder): dùng python:3.11-slim + gcc + libpq-dev để compile và install dependencies
+- Stage 2 (runtime): chỉ copy /root/.local (packages đã install) từ builder sang
+- Lợi ích: Final image không chứa pip, gcc, build tools → nhỏ hơn và an toàn hơn
+- Security: chạy với non-root user (appuser) thay vì root
 
 ### Exercise 2.3: Image size comparison
 - Develop:    1,660 MB (Disk) / 424 MB (Content)
 - Production:   236 MB (Disk) /  56.6 MB (Content)
-- Difference: nhá» hÆ¡n ~7x vá» disk, ~7.5x vá» content size
-- Káº¿t luáº­n: Multi-stage build Ä‘áº¡t má»¥c tiÃªu < 500 MB âœ“
+- Difference: nhỏ hơn ~7x về disk, ~7.5x về content size
+- Kết luận: Multi-stage build đạt mục tiêu < 500 MB ✓
 
 ### Exercise 2.4: Docker Compose stack
 
-**Services Ä‘Æ°á»£c start:**
-- redis    â†’ Cache, rate limiting (internal, port 6379)
-- qdrant   â†’ Vector database (internal, port 6333)
-- agent    â†’ FastAPI AI agent (internal, port 8000)
-- nginx    â†’ Reverse proxy, load balancer (public, port 80)
+**Services được start:**
+- redis    → Cache, rate limiting (internal, port 6379)
+- qdrant   → Vector database (internal, port 6333)
+- agent    → FastAPI AI agent (internal, port 8000)
+- nginx    → Reverse proxy, load balancer (public, port 80)
 
-**CÃ¡ch communicate:**
-- Táº¥t cáº£ services dÃ¹ng chung network "internal" (bridge)
-- Chá»‰ nginx expose ra ngoÃ i (port 80)
+**Cách communicate:**
+- Tất cả services dùng chung network "internal" (bridge)
+- Chỉ nginx expose ra ngoài (port 80)
 - agent depends_on redis + qdrant (healthcheck)
 - nginx forward traffic tá»›i agent:8000
 
 **Test results:**
 curl http://localhost/health
-â†’ {"status":"ok","uptime_seconds":57.4,"version":"2.0.0","timestamp":"2026-04-17T09:36:37.276969"}
+→ {"status":"ok","uptime_seconds":57.4,"version":"2.0.0","timestamp":"2026-04-17T09:36:37.276969"}
 
 curl http://localhost/ask -X POST -d '{"question": "Explain microservices"}'
-â†’ {"answer":"ÄÃ¢y lÃ  cÃ¢u tráº£ lá»i tá»« AI agent (mock)..."}
+→ {"answer":"Đây là câu trả lời từ AI agent (mock)..."}
 
 **Checkpoint 2:**
-[x] Hiá»ƒu cáº¥u trÃºc Dockerfile
-[x] Biáº¿t lá»£i Ã­ch cá»§a multi-stage builds
-[x] Hiá»ƒu Docker Compose orchestration
-[x] Biáº¿t cÃ¡ch debug container (docker logs, docker exec)
+[x] Hiểu cấu trúc Dockerfile
+[x] Biết lợi ích của multi-stage builds
+[x] Hiểu Docker Compose orchestration
+[x] Biết cách debug container (docker logs, docker exec)
 
 
 ## Part 3: Cloud Deployment
@@ -112,7 +112,7 @@ curl http://localhost/ask -X POST -d '{"question": "Explain microservices"}'
 
 **URL:** https://api-production-4cbb.up.railway.app
 
-**CÃ¡c bÆ°á»›c thá»±c hiá»‡n:**
+**Các bước thực hiện:**
 
 ```bash
 npm i -g @railway/cli
@@ -147,21 +147,21 @@ Retry window: 30s
 [1/1] Healthcheck succeeded!
 ```
 
-**Test káº¿t quáº£:**
+**Test kết quả:**
 
 ```bash
 # Health check
 curl https://api-production-4cbb.up.railway.app/health
-# â†’ {"status":"ok","timestamp":"2026-04-17T09:36:37.276969"}
+# → {"status":"ok","timestamp":"2026-04-17T09:36:37.276969"}
 
 # Agent endpoint
 curl https://api-production-4cbb.up.railway.app/ask -X POST \
   -H "Content-Type: application/json" \
   -d '{"question": "Explain microservices"}'
-# â†’ {"answer":"..."}
+# → {"answer":"..."}
 ```
 
-**Environment variables Ä‘Ã£ set:**
+**Environment variables đã set:**
 
 | Key | Value |
 |-----|-------|
@@ -170,43 +170,43 @@ curl https://api-production-4cbb.up.railway.app/ask -X POST \
 
 ---
 
-### Exercise 3.2: So sÃ¡nh `render.yaml` vs `railway.toml`
+### Exercise 3.2: So sánh `render.yaml` vs `railway.toml`
 
-| TiÃªu chÃ­ | `railway.toml` | `render.yaml` |
+| Tiêu chí | `railway.toml` | `render.yaml` |
 |----------|---------------|--------------|
-| CÃº phÃ¡p | TOML | YAML |
-| Health check | Cáº¥u hÃ¬nh trong dashboard hoáº·c toml | Khai bÃ¡o trá»±c tiáº¿p trong file (`healthCheckPath`) |
-| Build command | Tá»± detect hoáº·c set trong file | Khai bÃ¡o rÃµ `buildCommand` |
+| Cú pháp | TOML | YAML |
+| Health check | Cấu hình trong dashboard hoặc toml | Khai báo trực tiếp trong file (`healthCheckPath`) |
+| Build command | Tự detect hoặc set trong file | Khai báo rõ `buildCommand` |
 | Start command | `startCommand` | `startCommand` |
-| Env variables | `railway variables set` hoáº·c `[variables]` section | Khai bÃ¡o trong `envVars` block trong file |
-| Auto-deploy | Há»— trá»£ (push to GitHub â†’ deploy) | Há»— trá»£ (connect GitHub repo â†’ auto deploy) |
-| Free tier | $5 credit/thÃ¡ng | 750 giá»/thÃ¡ng |
-| Äiá»ƒm khÃ¡c biá»‡t chÃ­nh | ÄÆ¡n giáº£n hÆ¡n, Ã­t config hÆ¡n, phÃ¹ há»£p prototype nhanh | Cáº¥u hÃ¬nh chi tiáº¿t hÆ¡n, phÃ¹ há»£p side project lÃ¢u dÃ i |
+| Env variables | `railway variables set` hoặc `[variables]` section | Khai báo trong `envVars` block trong file |
+| Auto-deploy | Hỗ trợ (push to GitHub → deploy) | Hỗ trợ (connect GitHub repo → auto deploy) |
+| Free tier | $5 credit/tháng | 750 giờ/tháng |
+| Điểm khác biệt chính | Đơn giản hơn, ít config hơn, phù hợp prototype nhanh | Cấu hình chi tiết hơn, phù hợp side project lâu dài |
 
-**Nháº­n xÃ©t:**
-- `railway.toml` tá»‘i giáº£n hÆ¡n, Railway tá»± detect nhiá»u thá»© (Dockerfile, port, runtime).
-- `render.yaml` yÃªu cáº§u khai bÃ¡o rÃµ rÃ ng hÆ¡n nhÆ°ng Ä‘á»•i láº¡i dá»… kiá»ƒm soÃ¡t vÃ  minh báº¡ch hÆ¡n vá» cáº¥u hÃ¬nh.
-- Cáº£ hai Ä‘á»u há»— trá»£ GitOps (push code â†’ tá»± Ä‘á»™ng deploy).
+**Nhận xét:**
+- `railway.toml` tối giản hơn, Railway tự detect nhiều thứ (Dockerfile, port, runtime).
+- `render.yaml` yêu cầu khai báo rõ ràng hơn nhưng đổi lại dễ kiểm soát và minh bạch hơn về cấu hình.
+- Cả hai đều hỗ trợ GitOps (push code → tự động deploy).
 
 ---
 
 ### Exercise 3.3: (Optional) GCP Cloud Run
 
-**Äá»c `cloudbuild.yaml` vÃ  `service.yaml`:**
+**Đọc `cloudbuild.yaml` và `service.yaml`:**
 
-- `cloudbuild.yaml` Ä‘á»‹nh nghÄ©a CI/CD pipeline gá»“m 3 bÆ°á»›c: build Docker image â†’ push lÃªn Google Container Registry â†’ deploy lÃªn Cloud Run.
-- `service.yaml` Ä‘á»‹nh nghÄ©a cáº¥u hÃ¬nh service trÃªn Cloud Run: image, port, memory limit, CPU limit, autoscaling (min/max instances), vÃ  environment variables.
-- Cloud Run tá»± Ä‘á»™ng scale vá» 0 khi khÃ´ng cÃ³ traffic â†’ tiáº¿t kiá»‡m chi phÃ­.
-- CI/CD pipeline cháº¡y tá»± Ä‘á»™ng má»—i khi push code lÃªn branch `main`.
+- `cloudbuild.yaml` định nghĩa CI/CD pipeline gồm 3 bước: build Docker image → push lên Google Container Registry → deploy lên Cloud Run.
+- `service.yaml` định nghĩa cấu hình service trên Cloud Run: image, port, memory limit, CPU limit, autoscaling (min/max instances), và environment variables.
+- Cloud Run tự động scale về 0 khi không có traffic → tiết kiệm chi phí.
+- CI/CD pipeline chạy tự động mỗi khi push code lên branch `main`.
 
 ---
 
 ## Checkpoint 3
 
-- [x] Deploy thÃ nh cÃ´ng lÃªn Railway
-- [x] CÃ³ public URL hoáº¡t Ä‘á»™ng: https://api-production-4cbb.up.railway.app
-- [x] Hiá»ƒu cÃ¡ch set environment variables trÃªn cloud (`railway variables set`)
-- [x] Biáº¿t cÃ¡ch xem logs (railway logs / deploy log trong dashboard)
+- [x] Deploy thành công lên Railway
+- [x] Có public URL hoạt động: https://api-production-4cbb.up.railway.app
+- [x] Hiểu cách set environment variables trên cloud (`railway variables set`)
+- [x] Biết cách xem logs (railway logs / deploy log trong dashboard)
 
 ---
 
@@ -492,10 +492,10 @@ python d:\lab12\day12_ha-tang-cloud_va_deployment\05-scaling-reliability\product
   - `instance-dd66da`
   - `instance-fdd2a1`
 - Script output confirmed:
-  - `âœ… All requests served despite different instances!`
+  - `✅ All requests served despite different instances!`
 - Conversation history check passed:
   - `Total messages: 10` (5 user + 5 assistant)
-  - `âœ… Session history preserved across all instances via Redis!`
+  - `✅ Session history preserved across all instances via Redis!`
 
 **Conclusion:**
 - Part 5.5 passed.
